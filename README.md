@@ -1,0 +1,1 @@
+REST Tests written for the CLYP API, using frisby.js
