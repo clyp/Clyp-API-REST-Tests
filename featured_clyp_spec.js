@@ -8,16 +8,16 @@ frisby.create('GET /featuredlist')
 	//.inspectJSON()
 	.afterJSON(function(json) {
 		for(i = 0; i < json.length; i++) {
-			testList(json[i].Title);
+			testList(json[i].Location);
 		}
 	})
 .toss();
 
 
-function testList(title) {
+function testList(Location) {
 	frisby.create('Check that the list returns 200')
-		.get(GET_URL + 'featuredlist/' + title)
+		.get(Location)
 		.expectStatus(200)
-		//.inspectJSON()
+		.inspectJSON()
 	.toss();
 };
