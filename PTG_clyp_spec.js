@@ -1,27 +1,29 @@
 // PTG - POST, Then Get
 // CLYP API Test to assure that uploading and retrieving files works correctly
 
-var frisby = require('../node_modules/frisby');
+var frisby = require('./node_modules/frisby');
 var fs = require('fs');
 var path = require('path');
 var FormData = require('form-data');
 var form = new FormData();
 
 // Testing Variables
+var options = require('./options').create();
 var filePath = path.resolve(__dirname, 'register.mp3');
-var POST_URL= 'https://uploadstaging.clyp.it/'
+var POST_URL= options.uploadResource;
+var GET_URL = options.apiUrl;
 
 var title = 'Register';
 var description = 'POST Test';
 var longitude = -97;
 var latitude = 30;
 
-var json1;
+var testTwoJson;
 //
 
 //////// Test #1 URL Parameters /////////
 form.append('audioFile', fs.createReadStream(filePath), {
-  knownLength: fs.statSync(filePath).size         // we need to set the knownLength so we can call  form.getLengthSync()
+  knownLength: fs.statSync(filePath).size  // we need to set the knownLength so we can call form.getLengthSync()
 });
 
 form.append('description', 'POST Test');
@@ -32,8 +34,8 @@ form.append('latitude', latitude);
 
 
 // Test #1 - POST Audio to Clyp.it upload staging
-frisby.create('POST Audio to Clyp.it upload staging')
-  .post(POST_URL+ 'upload',
+frisby.create('Test 1: POST Audio to Clyp.it upload staging')
+  .post(POST_URL,
   form,
   {
     json: false,
@@ -75,7 +77,7 @@ function test2(json) {
     var playlistID = json.PlaylistId;
     var playlistUploadToken = json.PlaylistUploadToken;
     
-    json1 = json;
+    testTwoJson = json;
 
     // Set variables for new test
     form = new FormData(); // Wipe Multi-Part Form-Data clean 
@@ -95,8 +97,8 @@ function test2(json) {
     form.append('longitude', longitude);
     form.append('latitude', latitude);
 
-    frisby.create('Add new audio file to playlist we created')
-      .post(POST_URL + 'upload',
+    frisby.create('Test 2: Add new audio file to playlist we created')
+      .post(POST_URL,
       form,
       {
         json: false,
@@ -135,10 +137,10 @@ function test2(json) {
 // Test #3 - GET JSON By Passing in AudioFileID from Test #2
 function test3(json) {
 
-  var GET_URL = 'https://apistaging.clyp.it/';
+  var test3AudioFileID = json.AudioFileId;
 
-  frisby.create('GET Previous Upload')
-    .get(GET_URL + json.AudioFileId)
+  frisby.create('Test 3: GET Previous Upload')
+    .get(options.getAudioFileResource(test3AudioFileID))
     .expectStatus(200)
     .expectJSONTypes({
       Status: String,
@@ -157,7 +159,7 @@ function test3(json) {
     .expectJSON({
       // Make sure all fields match the response from the previous POST
       Status: 'DownloadDisabled',
-      AudioFileId: json.AudioFileId,
+      AudioFileId: test3AudioFileID,
       Title: json.title,
       Description: json.description,
       Duration: json.duration,
@@ -178,26 +180,24 @@ function test3(json) {
 // Test #4 - GET JSON By Passing in AudioFileID from Test #2
 function test4(json) {
 
-  var GET_URL = 'https://apistaging.clyp.it/'
-
-  frisby.create('GET Previous Upload')
-    .get(GET_URL + json.AudioFileId + '/playlist')
+  frisby.create('Test 4: GET Previous Upload')
+    .get(options.getAudioFileResource(json.AudioFileId) + '/playlist')
     .expectStatus(200)
     .expectJSON({
         AudioFiles: 
-        [ { Status: 'DownloadDisabled',
-           AudioFileId: json1.AudioFileId,
-           Title: json1.title,
-           Description: json1.description,
-           Duration: json1.duration,
-           Url: json1.Url,
-           Mp3Url: json1.Mp3Url,
-           SecureMp3Url: json1.SecureMp3Url,
-           OggUrl: json1.OggUrl,
-           SecureOggUrl: json1.SecureOggUrl,
+        [ { Status: 'DownloadDisabled', // testTwoJson is the saved data that test 2 returned
+           AudioFileId: testTwoJson.AudioFileId,
+           Title: testTwoJson.title,
+           Description: testTwoJson.description,
+           Duration: testTwoJson.duration,
+           Url: testTwoJson.Url,
+           Mp3Url: testTwoJson.Mp3Url,
+           SecureMp3Url: testTwoJson.SecureMp3Url,
+           OggUrl: testTwoJson.OggUrl,
+           SecureOggUrl: testTwoJson.SecureOggUrl,
            Longitude: longitude,
            Latitude: latitude },
-         { Status: 'DownloadDisabled',
+         { Status: 'DownloadDisabled', // This JSON is what test 3 returned
            AudioFileId: json.AudioFileId,
            Title: json.title,
            Description: json.description,
