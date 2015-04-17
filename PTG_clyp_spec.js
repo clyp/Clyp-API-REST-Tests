@@ -1,6 +1,7 @@
 // PTG - POST, Then Get
 // CLYP API Test to assure that uploading and retrieving files works correctly
 
+// Node Dependencies
 var frisby = require('./node_modules/frisby');
 var fs = require('fs');
 var path = require('path');
@@ -9,9 +10,8 @@ var form = new FormData();
 
 // Testing Variables
 var options = require('./options').create();
-var filePath = path.resolve(__dirname, 'register.mp3');
 var POST_URL= options.uploadResource;
-var GET_URL = options.apiUrl;
+var filePath = path.resolve(__dirname, 'register.mp3');
 
 var title = 'Register';
 var description = 'POST Test';
@@ -26,7 +26,7 @@ form.append('audioFile', fs.createReadStream(filePath), {
   knownLength: fs.statSync(filePath).size  // we need to set the knownLength so we can call form.getLengthSync()
 });
 
-form.append('description', 'POST Test');
+form.append('description', description);
 form.append('title', title);
 form.append('longitude', longitude);
 form.append('latitude', latitude);
@@ -34,7 +34,7 @@ form.append('latitude', latitude);
 
 
 // Test #1 - POST Audio to Clyp.it upload staging
-frisby.create('Test 1: POST Audio to Clyp.it upload staging')
+frisby.create('PTG Test 1: POST Audio to Clyp.it upload staging')
   .post(POST_URL,
   form,
   {
@@ -97,7 +97,7 @@ function test2(json) {
     form.append('longitude', longitude);
     form.append('latitude', latitude);
 
-    frisby.create('Test 2: Add new audio file to playlist we created')
+    frisby.create('PTG Test 2: Add new audio file to playlist we created')
       .post(POST_URL,
       form,
       {
@@ -139,7 +139,7 @@ function test3(json) {
 
   var test3AudioFileID = json.AudioFileId;
 
-  frisby.create('Test 3: GET Previous Upload')
+  frisby.create('PTG Test 3: GET Previous Upload')
     .get(options.getAudioFileResource(test3AudioFileID))
     .expectStatus(200)
     .expectJSONTypes({
@@ -180,7 +180,7 @@ function test3(json) {
 // Test #4 - GET JSON By Passing in AudioFileID from Test #2
 function test4(json) {
 
-  frisby.create('Test 4: GET Previous Upload')
+  frisby.create('PTG Test 4: GET Previous Upload')
     .get(options.getAudioFileResource(json.AudioFileId) + '/playlist')
     .expectStatus(200)
     .expectJSON({
