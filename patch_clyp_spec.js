@@ -32,7 +32,7 @@ frisby.create('PATCH Test - Create Empty Playlist')
 	.after(function(err, res, body) {
 		var setCookie = res.headers['set-cookie'];
 		tmpID = setCookie[0].split(';')[0];
-		console.log(tmpID);
+		//console.log(tmpID);
 	})
 	.afterJSON(post)
 .toss();
@@ -76,7 +76,7 @@ function post(json) {
 	    Description: description,
 	    Title: title
 	  })  
-	  .inspectJSON() // Prints out response to console
+	  //.inspectJSON() // Prints out response to console
 	  .afterJSON(patchTest)
 	.toss();
 };
@@ -85,7 +85,7 @@ function post(json) {
 
 /* PATCH Test 1- Change Title and Description of previously uploaded file using tmpID cookie */
 function patchTest(json) {
-	console.log("");
+	// console.log("");
 
 	initialJSON = json;
 	audioFileID = initialJSON.AudioFileId;
@@ -108,7 +108,7 @@ function patchTest(json) {
    	    Description: newDescription,
 	    Title: newTitle
 	  })  
-	  .inspectJSON()
+	  // .inspectJSON()
 	  .afterJSON(patchStatusTest)
 	.toss();
 };
@@ -116,7 +116,7 @@ function patchTest(json) {
 
 /* PATCH Test 2- Try to Change Status - Should 401 since we are not authorized */
 function patchStatusTest(json) {
-	console.log("");
+	// console.log("");
 
 	var newStatus = 'Deleted';
 
