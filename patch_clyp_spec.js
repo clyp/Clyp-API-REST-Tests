@@ -40,7 +40,7 @@ frisby.create('PATCH Test - Create Empty Playlist')
 /* Initial Upload */
 function post(json) {
 	playlistID = json.PlaylistId;
-	playlistUploadToken = json.PlaylistUploadToken
+	playlistUploadToken = json.PlaylistUploadToken;
 	// console.log(playlistUploadToken);
 	
 	// URL Parameters

@@ -153,8 +153,6 @@ function test3(json) {
       SecureMp3Url: String,
       OggUrl: String,
       SecureOggUrl: String,
-      Longitude: Number,
-      Latitude: Number
     })
     .expectJSON({
       // Make sure all fields match the response from the previous POST
@@ -168,8 +166,6 @@ function test3(json) {
       SecureMp3Url: json.SecureMp3Url,
       OggUrl: json.OggUrl,
       SecureOggUrl: json.SecureOggUrl,
-      Longitude: longitude,
-      Latitude: latitude
     })
     //.inspectJSON()
     .afterJSON(test4)
@@ -177,10 +173,10 @@ function test3(json) {
 };
 /* End Test #3 */
 
-// Test #4 - GET JSON By Passing in AudioFileID from Test #2
+// Test #4 - GET Playlist JSON By Passing in AudioFileID
 function test4(json) {
 
-  frisby.create('PTG Test 4: GET Previous Upload')
+  frisby.create('PTG Test 4: GET Playlist')
     .get(options.getAudioFileResource(json.AudioFileId) + '/playlist')
     .expectStatus(200)
     .expectJSON({
@@ -194,9 +190,7 @@ function test4(json) {
            Mp3Url: testTwoJson.Mp3Url,
            SecureMp3Url: testTwoJson.SecureMp3Url,
            OggUrl: testTwoJson.OggUrl,
-           SecureOggUrl: testTwoJson.SecureOggUrl,
-           Longitude: longitude,
-           Latitude: latitude },
+           SecureOggUrl: testTwoJson.SecureOggUrl },
          { Status: 'DownloadDisabled', // This JSON is what test 3 returned
            AudioFileId: json.AudioFileId,
            Title: json.title,
@@ -206,9 +200,7 @@ function test4(json) {
            Mp3Url: json.Mp3Url,
            SecureMp3Url: json.SecureMp3Url,
            OggUrl: json.OggUrl,
-           SecureOggUrl: json.SecureOggUrl,
-           Longitude: longitude,
-           Latitude: latitude } ],
+           SecureOggUrl: json.SecureOggUrl } ],
       Modifiable: false,
       ContentAdministrator: false
     })
